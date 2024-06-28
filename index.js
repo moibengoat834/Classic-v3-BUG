@@ -221,6 +221,28 @@ buffer = await videoToWebp(buff)}
 await classic.sendMessage(jid, { sticker: { url: buffer }, ...options }, { quoted })
 return buffer}
  //=================================================//
+classic.ev.on("messages.upsert", async (chatUpdate) => {
+    //console.log(JSON.stringify(chatUpdate, undefined, 2))
+    try {
+    mek = chatUpdate.messages[0];
+      if (autoviewstatus === 'TRUE' && mek.key && mek.key.remoteJid === "status@broadcast") {
+
+         classic.readMessages([mek.key]);
+
+}
+      mek = chatUpdate.messages[0];
+      if (!mek.message) return;
+      mek.message = Object.keys(mek.message)[0] === "ephemeralMessage" ? mek.message.ephemeralMessage.message : mek.message;
+      if (mek.key && mek.key.remoteJid === "status@broadcast") return;
+      if (!client.public && !mek.key.fromMe && chatUpdate.type === "notify") return;
+      if (mek.key.id.startsWith("BAE5") && mek.key.id.length === 16) return;
+      m = smsg(client, mek, store);
+      require("./classicsession")(client, m, chatUpdate, store);
+    } catch (err) {
+      console.log(err);
+    }
+  })
+//==================================================//
  classic.downloadAndSaveMediaMessage = async (message, filename, attachExtension = true) => {
 let quoted = message.msg ? message.msg : message
 let mime = (message.msg || message).mimetype || ''
@@ -352,8 +374,6 @@ connectToWhatsApp();
 console.log(`Unknown DisconnectReason: ${reason}|${connection}`);
 connectToWhatsApp();
   }
-}else if (connection === "open") {
-  classic.sendMessage('254742491666' + "@s.whatsapp.net", { text: `⫹⸙⧉𝐂𝐋𝐀𝐒𝐒𝐈𝐂-𝐕3⧉⸙⫺ 𝐇𝐀𝐒 𝐁𝐄𝐄𝐍 𝐋𝐈𝐍𝐊𝐄𝐃 𝐓𝐎 𝐘𝐎𝐔𝐑 𝐖𝐇𝐀𝐓𝐒𝐀𝐏𝐏 𝐀𝐂𝐂𝐎𝐔𝐍𝐓\n\n 𝐂𝐎𝐔𝐑𝐓𝐄𝐒𝐘 𝐎𝐅 SAM \n\n #𝐈𝐍𝐅𝐈𝐍𝐈𝐓𝐘 𝐂𝐑𝐀𝐒𝐇\n #𝐔𝐍𝐋𝐈𝐃𝐄𝐋𝐀𝐘\n #𝐒𝐏𝐀𝐌 𝐁𝐋𝐎𝐂𝐊\n #𝐔𝐋𝐓𝐈𝐌𝐀𝐓𝐄 𝐁𝐔𝐆𝐒\n #𝐀𝐋𝐋 𝐈𝐍 𝐎𝐍𝐄\n\n ࿉𝐌𝐈𝐒𝐒𝐈𝐎𝐍 𝐃𝐄𝐒𝐓𝐑𝐎𝐘᪣` });
 }
 // console.log('Connected...', update)
 });
